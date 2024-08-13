@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import slugify from "slugify";
 
 const productSchema = new mongoose.Schema({
     name:{
@@ -34,11 +35,27 @@ const productSchema = new mongoose.Schema({
     updatedAt:{
         type: Date
     },
-    reviews: {
+    reviews: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Reviews'
+    }],
+    slug:{
         type: String
     }
 
+
 });
+
+productSchema.pre('save', function(next){
+    if(!this.isNew) next();
+   this.slug =  slugify(this.name, {
+       replacement: '_',
+       lower: true
+   } )
+    next();
+})
+
+
 
 const Product =  mongoose.model('Product', productSchema);
 
