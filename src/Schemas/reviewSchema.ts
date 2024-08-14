@@ -9,11 +9,11 @@ const reviewSchema = new mongoose.Schema({
     createdAt: {
         type: Date
     },
-    product: {
+    product: [{
         type:mongoose.Schema.Types.ObjectId,
         ref: 'Product',
-        required: true
-    },
+
+    }],
     user:{
       type: String,
     },
@@ -24,8 +24,14 @@ const reviewSchema = new mongoose.Schema({
 
 })
 
+//
+// reviewSchema.pre('find', function(this: mongoose.Document,next){
+//     this.populate('product')
+//     next()
+// })
 
 const Reviews = mongoose.model('Reviews', reviewSchema);
+
 
 
 export default Reviews

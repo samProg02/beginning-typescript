@@ -126,6 +126,7 @@ export const deleteProduct = async (request: express.Request, response: express.
 export const postAReview = async (request: express.Request, response: express.Response) => {
     try{
         if(!request.body.review) throw new Error('This is for passing review');
+        console.log(request.body.review)
         const review = await Reviews.create({
             review: request.body.review,
             createdAt: Date.now(),
@@ -146,9 +147,9 @@ export const postAReview = async (request: express.Request, response: express.Re
 
 
     }catch (err) {
-        response.status(200).json({
+        response.status(400).json({
             status: 'fail',
-            error: err,
+            error: err
         })
     }
 }

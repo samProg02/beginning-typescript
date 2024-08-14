@@ -46,14 +46,24 @@ const productSchema = new mongoose.Schema({
 
 });
 
-productSchema.pre('save', function(next){
-    if(!this.isNew) next();
-   this.slug =  slugify(this.name, {
-       replacement: '_',
-       lower: true
-   } )
+
+productSchema.pre('save', function (next) {
+    if (!this.isNew) return next();
+    this.slug = slugify(this.name, {
+        replacement: '_',
+        lower: true
+    });
     next();
-})
+});
+
+productSchema.pre(/^find/,  function ( this:mongoose.Document, next) {
+
+
+     this.populate('reviews'); // Use async/await for population
+    next();
+});
+
+
 
 
 

@@ -27,4 +27,6 @@ const express_1 = require("express");
 const productHandler = __importStar(require("./../handler/productHandlers"));
 const router = (0, express_1.Router)();
 router.route('/').post(productHandler.createProduct).get(productHandler.getAllProduct);
+// router.route('/:slug').get(productHandler.getProductById);
+router.route('/:id').get(productHandler.getProductById).patch(productHandler.updateProduct).delete(productHandler.deleteProduct).post(productHandler.postAReview);
 exports.default = router;
