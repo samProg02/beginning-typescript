@@ -15,7 +15,7 @@ export const createProduct = async (request: express.Request, response: express.
     } catch (err) {
         response.status(200).json({
             status: 'fail',
-            error: err
+            error: (err as Error).message
         })
     }
 }
@@ -63,7 +63,7 @@ export const getAllProduct = async (request: express.Request, response: express.
     }catch (err){
         response.status(400).json({
             status: 'fail',
-            error: err
+            error: (err as Error).message
         })
     }
 }
@@ -82,7 +82,7 @@ export const getProductById = async (request: express.Request, response: express
     }catch (err){
         response.status(400).json({
             status: 'fail',
-            error: err
+            error: (err as Error).message
         })
     }
 }
@@ -103,7 +103,7 @@ export const updateProduct = async (request: express.Request, response: express.
     }catch (err){
         response.status(400).json({
             status: 'fail',
-            error: err
+            error: (err as Error).message
         })
     }
 }
@@ -118,7 +118,7 @@ export const deleteProduct = async (request: express.Request, response: express.
     }catch (err){
         response.status(200).json({
             status: 'fail',
-            error: err
+            error: (err as Error).message
         })
     }
 }
@@ -149,7 +149,7 @@ export const postAReview = async (request: express.Request, response: express.Re
     }catch (err) {
         response.status(400).json({
             status: 'fail',
-            error: err
+            error: (err as Error).message
         })
     }
 }

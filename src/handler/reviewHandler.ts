@@ -13,7 +13,7 @@ export const getAllReviews = async (request: express.Request, response: express.
     }catch (err) {
         response.status(400).json({
             status: 'fail',
-            error: err
+            error: (err as Error).message
         })
     }
 }
@@ -32,7 +32,7 @@ export const getAReviewById = async (request: express.Request, response: express
     }catch(err){
         response.status(400).json({
             status: 'fail',
-            error: err
+            error: (err as Error).message
         })
     }
 }
@@ -51,7 +51,7 @@ export const updateReviewbyId = async (request: express.Request, response: expre
     }catch(err){
         response.status(400).json({
             status: 'fail',
-            error: err
+            error: (err as Error).message
         })
     }
 }
@@ -67,7 +67,7 @@ export const deleteReviewById = async (request: express.Request, response: expre
     }catch (err){
         response.status(400).json({
             status: 'fail',
-            error: err
+            error: (err as Error).message
         })
     }
 }
