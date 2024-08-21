@@ -38,7 +38,7 @@ export const login = async  (request: express.Request, response: express.Respons
         if(!request.body.email || !request.body.password) throw new Error('Please fill the field correctly')
         const user = await Users.findOne({email: request.body.email})
         if (!user) throw new Error('User not found you can try signing up');
-        console.log(user)
+        // console.log(user)
         if(!await user.comparePassword(request.body.password)) throw new Error('Your password or email is incorrect');
 
         const token = jwt.sign({id: user._id}, process.env.SECRET as string, {
@@ -70,22 +70,19 @@ export const protect = async (request: CustomRequest, response: express.Response
         let token: string;
         if (request.headers.authorization && request.headers.authorization.startsWith('Bearer')) {
             token = request.headers.authorization.split(' ')[1];
-        } else if (request.cookies.jwt) {
-            token = request.cookies.jwt
+        } else if (request.cookies?.jwt) {
+            token = request.cookies?.jwt
         }
-        if (!token!) next('You\'re not logged in, Please log in ')
+        if (!token!) next('You\'re not logged in, Please log in ');
         const decoded = await jwt.verify(token!, process.env.SECRET!) as JwtPayload;
         const user = await Users.findById(decoded.id);
-        if (!user) throw new Error('The user is not real');
-        if (user.passwordChangedAfter(decoded.iat as number)) next('You have changed your password after you login, please login again');
+        if (!user) next('The user is not real');
+        if (user!.passwordChangedAfter(decoded.iat as number)) next('You have changed your password after you login, please login again');
 
         request.user = user
 
     }catch (err){
-       response.status(400).json({
-           status: 'fail',
-           error: (err as Error).message
-       })
+      return
    }
 
 
@@ -156,8 +153,10 @@ export const resetPassword = async (request:express.Request, response: express.R
 export const updatePassword = async (request:CustomRequest, response: express.Response) =>{
     try{
         const user = await Users.findById(request.user._id)
-        console.log(user!.password, request.body.currentPassword, user!.confirmPassword(request.body.currentPassword, user!.password))
+        // console.log(user!.password, request.body.currentPassword, user!.confirmPassword(request.body.currentPassword, user!.password))
         if (!(await user!.comparePassword(request.body.currentPassword))) throw new Error('The current password you provided is wrong');
+
+
 
         user!.set('password', request.body.password);
         user!.set('passwordConfirm', request.body.passwordConfirm)
@@ -174,3 +173,11 @@ export const updatePassword = async (request:CustomRequest, response: express.Re
     }
 }
 
+export const userAccess = (...roles: string[]) => {
+    return (request:CustomRequest, response: express.Response, next: NextFunction) => {
+
+        if (!roles.includes(request.user?.role)) next('The user do not have the access to this function');
+        next()
+
+    }
+}

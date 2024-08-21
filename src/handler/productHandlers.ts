@@ -1,10 +1,12 @@
-import express, {query, request, response} from "express";
+import express, {query, Request, request, response} from "express";
 import Product from "../Schemas/productSchema";
 import Reviews from "../Schemas/reviewSchema";
-
-export const createProduct = async (request: express.Request, response: express.Response) => {
+interface CustomRequest extends Request {
+    user?: any; // Replace 'any' with the actual type of your user object
+}
+export const createProduct = async (request: CustomRequest, response: express.Response) => {
     try {
-        const product = await Product.create(request.body);
+        const product = await Product.create({...request.body, user: request.user._id});
         response.status(200).json({
             status: 'success',
             data: {
@@ -123,7 +125,7 @@ export const deleteProduct = async (request: express.Request, response: express.
     }
 }
 
-export const postAReview = async (request: express.Request, response: express.Response) => {
+export const postAReview = async (request: CustomRequest, response: express.Response) => {
     try{
         if(!request.body.review) throw new Error('This is for passing review');
         console.log(request.body.review)
@@ -131,6 +133,7 @@ export const postAReview = async (request: express.Request, response: express.Re
             review: request.body.review,
             createdAt: Date.now(),
             product: request.params.id,
+            user: request.user._id
         });
         const updatedProduct = await Product.findByIdAndUpdate(
             request.params.id,

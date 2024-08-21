@@ -5,9 +5,9 @@ import * as authHandler from './../handler/authHandler'
 
 const router = Router();
 
-router.route('/').get( reviewHandler.getAllReviews)
+router.route('/').get(authHandler.protect,authHandler.userAccess('seller', 'buyer'), reviewHandler.getAllReviews)
 
-router.route('/:id').get(reviewHandler.getAReviewById).patch(reviewHandler.updateReviewbyId).delete(reviewHandler.deleteReviewById)
+router.route('/:id').get(reviewHandler.getAReviewById).patch(authHandler.protect,authHandler.userAccess('buyer'),reviewHandler.updateReviewbyId).delete(authHandler.protect,authHandler.userAccess('buyer'),reviewHandler.deleteReviewById)
 
 
 

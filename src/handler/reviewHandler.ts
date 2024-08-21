@@ -1,6 +1,8 @@
-import express, {request} from "express";
+import express, {NextFunction, Request, request} from "express";
 import Reviews from "../Schemas/reviewSchema";
-
+interface CustomRequest extends Request {
+    user?: any; // Replace 'any' with the actual type of your user object
+}
 export const getAllReviews = async (request: express.Request, response: express.Response) => {
     try{
         const allReviews = await Reviews.find().populate('product' , 'name -reviews');
@@ -39,9 +41,15 @@ export const getAReviewById = async (request: express.Request, response: express
 
 
 
-export const updateReviewbyId = async (request: express.Request, response: express.Response) => {
+export const updateReviewbyId = async (request: CustomRequest, response: express.Response) => {
     try{
+        let reviewToUpdate = await Reviews.findById(request.params.id )
+        // console.log((request.user._id as string).toString(),reviewToUpdate!.user, `new ObjectId(${reviewToUpdate!.user})`)
+        if(!((request.user._id as string).toString() === (reviewToUpdate!.user as string ))) throw new Error('You\'re not the creator of the review');
+
         const updatedReview = await Reviews.findByIdAndUpdate(request.params.id, {review: request.body.review}, {new: true} );
+
+
         response.status(200).json({
             status: 'success',
             data: {
@@ -57,8 +65,11 @@ export const updateReviewbyId = async (request: express.Request, response: expre
 }
 
 
-export const deleteReviewById = async (request: express.Request, response: express.Response) => {
+export const deleteReviewById = async (request: CustomRequest, response: express.Response) => {
     try{
+        const reviewToDelete = await Reviews.findById(request.params.id);
+        if(!((request.user._id as string).toString() === (reviewToDelete!.user as string ))) throw new Error('You\'re not the creator of the review');
+
         const deletedReview = await Reviews.findByIdAndDelete(request.params.id);
         response.status(200).json({
             status: 'success',
@@ -71,3 +82,4 @@ export const deleteReviewById = async (request: express.Request, response: expre
         })
     }
 }
+

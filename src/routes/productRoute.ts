@@ -7,9 +7,9 @@ const router = Router();
 
 
 
-router.route('/').post(productHandler.createProduct).get(authHandler.protect,productHandler.getAllProduct)
+router.route('/').post(authHandler.protect,authHandler.userAccess('seller'),productHandler.createProduct).get(productHandler.getAllProduct)
 // router.route('/:slug').get(productHandler.getProductById);
-router.route('/:id').get(productHandler.getProductById).patch(productHandler.updateProduct).delete(productHandler.deleteProduct).post(productHandler.postAReview)
+router.route('/:id').get(productHandler.getProductById).patch(authHandler.protect,authHandler.userAccess('seller'),productHandler.updateProduct).delete(authHandler.protect,authHandler.userAccess('seller', 'admin'),productHandler.deleteProduct).post(authHandler.protect,authHandler.userAccess('buyer','seller'),productHandler.postAReview)
 
 
 

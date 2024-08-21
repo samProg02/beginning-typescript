@@ -41,7 +41,11 @@ const productSchema = new mongoose.Schema({
     }],
     slug:{
         type: String
-    }
+    },
+    user: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }]
 
 
 });
@@ -59,7 +63,7 @@ productSchema.pre('save', function (next) {
 productSchema.pre(/^find/,  function ( this:mongoose.Document, next) {
 
 
-     this.populate('reviews'); // Use async/await for population
+     this.populate('reviews user'); // Use async/await for population
     next();
 });
 
