@@ -45,7 +45,12 @@ export const login = async  (request: express.Request, response: express.Respons
             expiresIn: process.env.EXPIRES_IN,
 
         })
-        response.cookie('jwt', token)
+        response.cookie('jwt', token, {
+            httpOnly: true,
+
+            // expires: new Date(Date.now() + 3600000) //
+        })
+
 
 
         response.status(200).json({
@@ -70,8 +75,8 @@ export const protect = async (request: CustomRequest, response: express.Response
         let token: string;
         if (request.headers.authorization && request.headers.authorization.startsWith('Bearer')) {
             token = request.headers.authorization.split(' ')[1];
-        } else if (request.cookies?.jwt) {
-            token = request.cookies?.jwt
+        } else if (request.cookies.jwt) {
+            token = request.cookies.jwt
         }
         if (!token!) next('You\'re not logged in, Please log in ');
         const decoded = await jwt.verify(token!, process.env.SECRET!) as JwtPayload;
@@ -80,6 +85,7 @@ export const protect = async (request: CustomRequest, response: express.Response
         if (user!.passwordChangedAfter(decoded.iat as number)) next('You have changed your password after you login, please login again');
 
         request.user = user
+
 
     }catch (err){
       return
@@ -181,3 +187,23 @@ export const userAccess = (...roles: string[]) => {
 
     }
 }
+
+export const logout = async (request: express.Request, response: express.Response) => {
+    try {
+        // Clear the JWT cookie
+        response.clearCookie('jwt', {
+            httpOnly: true,
+            secure: true // If using HTTPS
+        });
+
+        response.status(200).json({
+            status: 'success',
+            message: 'Logged out successfully'
+        });
+    } catch (err) {
+        response.status(404).json({
+            status: 'fail',
+            error: (err as Error).message,
+        });
+    }
+};

@@ -3,6 +3,7 @@ import userRouter from './routes/userRoutes'
 import productRoute from "./routes/productRoute";
 import ReviewRoute from "./routes/reviewRoute";
 import reviewRoute from "./routes/reviewRoute";
+import cookieParser from 'cookie-parser'
 
 
 const app = express()
@@ -40,7 +41,7 @@ interface CustomError extends Error {
 //         }
 //     };
 // }
-
+app.use(cookieParser());
 app.use('/api/users', userRouter);
 app.use('/api/product', productRoute);
 app.use('/api/reviews', reviewRoute);
