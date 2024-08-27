@@ -166,9 +166,20 @@ export const updatePassword = async (request:CustomRequest, response: express.Re
 
         user!.set('password', request.body.password);
         user!.set('passwordConfirm', request.body.passwordConfirm)
+        user!.set('passwordChangedAt', Date.now() -3)
+        const token = jwt.sign({id: user!._id}, process.env.SECRET as string, {
+            expiresIn: process.env.EXPIRES_IN,
+
+        })
+        response.cookie('jwt', token, {
+            httpOnly: true,
+
+            // expires: new Date(Date.now() + 3600000) //
+        })
         user!.save();
         response.status(200).json({
             status: 'success',
+            token,
             message: 'password changed correctly'
         })
     }catch (err) {
@@ -193,7 +204,7 @@ export const logout = async (request: express.Request, response: express.Respons
         // Clear the JWT cookie
         response.clearCookie('jwt', {
             httpOnly: true,
-            secure: true // If using HTTPS
+            // secure: true // If using HTTPS
         });
 
         response.status(200).json({
